@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Animate.js Example</title>
+      <style>
+        #bouncing-ball {
+          position: absolute;
+          top: 10%;
+          width: 100px;
+          height: 100px;
+          background: blue;
+          border-radius: 50px /50px;
+        }
+      </style>
+    </head>
+    <body id="animation-body">
+      <div id="bouncing-ball" data-45="calc(top, 100% - 100px); height: 100px; border-radius: 50px / 50px; background-color: blue;" data-50="top: calc(100% - 50px); background-color: navy; border-radius: 50px / 23px; height: 50px; easing(ease-in-out);" data-55="height: 100px; border-radius: 50px / 50px; background-color: blue; top:calc(100% - 100px); easing(ease-out);" data-duration="2.5s" data-iterations="infinite" data-easing="ease-in"></div>
+      <script type="text/javascript" src="src/animate.js" async="true"></script>
+    </body>
+</html>
