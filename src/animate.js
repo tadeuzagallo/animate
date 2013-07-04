@@ -4,7 +4,7 @@
   var _defaults = {
     name: null,
     duration: '1s',
-    delay: '',
+    delay: 0,
     easing: 'linear',
     waits: null,
     repeat: 1,
@@ -12,13 +12,25 @@
     'fill-mode': 'forwards',
     direction: 'normal',
     iterations: 1,
-    state: 'running'
+    play: 'true',
+    bind: 'none'
   },
   _valid_properties = Object.keys(_defaults),
-  _init = {};
+  _init = {},
+  _animating = {},
+  _waits = {};
 
   var _slice = Array.prototype.slice,
   _hop = Object.prototype.hasOwnProperty,
+  _on = d.addEventListener || d.attachEvent,
+  _off = d.removeEventListener || d.detachEvent,
+  _to_camel_case = function(underscored) {
+    return underscored
+    .replace(/^-/g, '')
+    .replace(/-([a-z])/g, function(match, letter) {
+      return letter.toUpperCase();
+    });
+  },
   _extend = function (target, source) {
     for (var k in source) {
       if (_hop.call(source, k)) {
@@ -39,16 +51,14 @@
       _style = d.createElement('style'),
       _ID = 0,
       _keyframe_content = '@%key%keyframes %name% {%keyframes% }',
-      _animation_keys = ['webkitAnimation', 'oAnimation', 'mozAnimation', 'animation'],
       _crossbrowser_keys = ['-webkit-', '-moz-', '-o-', ''],
       _animation_properties = {
-        Delay: 'delay',
-        Direction: 'direction',
-        Duration: 'duration',
-        FillMode: 'fill-mode',
-        IterationCount: 'iterations',
-        PlayState: 'state',
-        TimingFunction: 'easing'
+        delay: 'delay',
+        direction: 'direction',
+        duration: 'duration',
+        'fill-mode': 'fill-mode',
+        iterations: 'iteration-count',
+        'easing': 'timing-function'
       },
       _unit = function(a) {
         return a.replace(String(parseFloat(a)), '').trim();
@@ -170,7 +180,7 @@
       }
     };
 
-    Animate.VERSION = '';
+    Animate.VERSION = '0.0.1';
 
     this.process = function(body, element) {
       var el = new Animate.Element(element);
@@ -181,6 +191,13 @@
       function Element(element) {
         this.element = element;
         this.original_id = this.id = ++_ID;
+
+        this._name = '__animate_keyframes_' + this.id;
+        this._bind = '';
+
+        if (!element.id) {
+          element.id = 'animate-element-' + this.id;
+        }
       };
 
       return Element;
@@ -192,7 +209,8 @@
           _animations = {},
           _params = _extend({}, _defaults),
           _keyframes = '',
-          _name = '__animate_keyframes_' + this.id;
+          _element_style = '',
+          _this = this;
 
       for (var k = 0, l = this.element.attributes.length, attr, n, v, match; k < l; k++) {
         attr = this.element.attributes[k];
@@ -223,33 +241,90 @@
           element._prevent_repeat = true;
           element.original_id = this.id;
 
-          element.parse();
+          setTimeout(function() {
+            element.parse();
+          }, 0);
         }
       }
 
-      for (var k = 0, l = _crossbrowser_keys.length, key; k < l; k++) {
-        key = _crossbrowser_keys[k];
+      _crossbrowser(function(key) {
         _style.innerHTML += _keyframe_content
           .replace('%key%', key)
-          .replace('%name%', _name)
+          .replace('%name%', _this._name)
           .replace('%keyframes%', _keyframes);
-      }
+      });
 
-      for (var x = 0, y = _animation_keys.length, key; x < y; x++) {
-        key = _animation_keys[x];
-
-        this.element.style[key + 'Name'] = _name;
+      _crossbrowser(function(key) {
+        _element_style += key + 'animation-play-state:' + (_params.play === 'false' ? 'paused' : 'running') + ';'; 
 
         for (var k in _animation_properties) {
           if (!_hop.call(_animation_properties, k)) {
             continue;
           }
 
-          this.element.style[key + k] = _params[_animation_properties[k]];
+          _element_style += key + 'animation-' + _animation_properties[k] + ':' + _params[k] + ';';
+        }
+      });
+
+      _style.innerHTML += '#' + this.element.id + '{' + _element_style + '}';
+
+      var fn = function(e) {
+        _off.call(this, 'webkitAnimationEnd', fn, false);
+        _off.call(this, 'animationend', fn, false);
+        _off.call(this, 'onanimationend', fn, false);
+
+        if (_params.callback && w[_params.callback] && typeof w[_params.callback] === 'function') {
+          w[_params.callback].call(_this.element, e || window.event);
+        }
+
+        if (_hop.call(_waits, _this.element.id)) {
+          var ws = _waits[_this.element.id];
+          for (var k = 0, l = ws.length; k < l; k++) {
+            ws[k].start();
+          };
+          delete _waits[_this.element.id];
+        }
+      };
+
+      _on.call(this.element, 'webkitAnimationEnd', fn, false);
+      _on.call(this.element, 'animationend', fn, false);
+      _on.call(this.element, 'onanimationend', fn, false);
+
+      if (_params.bind) {
+        switch (_params.bind) {
+          case 'click':
+          case 'onclick':
+          case 'active':
+            this._bind = ':active';
+            break;
+          case 'hover':
+          case 'over':
+          case 'mouseover':
+            this._bind = ':hover';
+            break;
         }
       }
 
+      if (!_params.waits) {
+        this.start();
+      } else {
+        if (!_hop.call(_waits, _params.waits)) {
+          _waits[_params.waits] = [];
+        }
+
+        _waits[_params.waits].push(this);
+      }
     };
+
+    Animate.Element.prototype.start = function(_bind) {
+      var _element_style = '',
+          _this = this;
+      _crossbrowser(function(key) {
+        _element_style += key + 'animation-name:' + _this._name + ';'; 
+      });
+
+      _style.innerHTML += '#' + this.element.id + this._bind + '{' + _element_style + '}';
+    }
 
     Animate.Element.prototype.parse_value = function(value) {
       var match = value.trim().match(_functions_regex),
