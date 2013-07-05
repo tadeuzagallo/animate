@@ -17,20 +17,19 @@
   },
   _valid_properties = Object.keys(_defaults),
   _init = {},
-  _animating = {},
   _waits = {};
 
   var _slice = Array.prototype.slice,
   _hop = Object.prototype.hasOwnProperty,
   _on = d.addEventListener || d.attachEvent,
   _off = d.removeEventListener || d.detachEvent,
-  _to_camel_case = function(underscored) {
-    return underscored
-    .replace(/^-/g, '')
-    .replace(/-([a-z])/g, function(match, letter) {
-      return letter.toUpperCase();
-    });
-  },
+  //_to_camel_case = function(underscored) {
+    //return underscored
+    //.replace(/^-/g, '')
+    //.replace(/-([a-z])/g, function(match, letter) {
+      //return letter.toUpperCase();
+    //});
+  //},
   _extend = function (target, source) {
     for (var k in source) {
       if (_hop.call(source, k)) {
@@ -79,8 +78,8 @@
       },
       _functions = {
         random: function(a, b)  {
-          var _a = parseInt(a),
-              _b = parseInt(b);
+          var _a = parseInt(a, 10),
+              _b = parseInt(b, 10);
           console.assert(_unit(a), _unit(b));
 
           return _a + Math.floor(Math.random() * (_b - _a)) + _unit(b);
@@ -94,11 +93,11 @@
             if (!PA[id]) {
              PA[id] = initial;
             } else {
-             PA[id] = parseInt(PA[id]) + ratio + _unit(PA[id]);
+             PA[id] = parseInt(PA[id], 10) + ratio + _unit(PA[id]);
             }
 
             return PA[id];
-          }
+          };
         })(),
         pg: (function() {
           var PG = {};
@@ -109,7 +108,7 @@
             if (!PG[id]) {
              PG[id] = initial;
             } else {
-             PG[id] = parseInt(PG[id]) * ratio + _unit(PG[id]);
+             PG[id] = parseInt(PG[id], 10) * ratio + _unit(PG[id]);
             }
 
             return PG[id];
@@ -129,7 +128,7 @@
              LOG[id] ++;
             }
 
-            return parseInt(value) * (Math.log(LOG[id]) / Math.log(base)) + _unit(value);
+            return parseInt(value, 10) * (Math.log(LOG[id]) / Math.log(base)) + _unit(value);
           };
         })(),
         easing: function(value) {
@@ -153,7 +152,14 @@
 
   d.head.appendChild(_style);
 
-  w.Animate = new function Animate() {
+  var console = w.console = w.console || {
+    log: function() {
+    },
+    assert: function() {
+    }
+  };
+
+  w.Animate = new (function Animate() {
     if (_instance) {
       throw 'class Animate should not be instantiated';
     }
@@ -173,7 +179,9 @@
 
       var elements = _slice.call(_find_by_tag(body, '*'), 0);
 
-      for (var k = 0, l = elements.length, element; k < l, element = elements[k]; k++) {
+      for (var k = 0, l = elements.length, element; k < l; k++) {
+        element = elements[k];
+
         if (element.attributes.length) {
           _instance.process(body, element);
         }
@@ -198,7 +206,7 @@
         if (!element.id) {
           element.id = 'animate-element-' + this.id;
         }
-      };
+      }
 
       return Element;
     })();
@@ -206,7 +214,6 @@
     Animate.Element.prototype.parse = function() {
       var _prop = /^data-(\d+)$/,
           _param = /^data-(.*)$/,
-          _animations = {},
           _params = _extend({}, _defaults),
           _keyframes = '',
           _element_style = '',
@@ -233,7 +240,13 @@
       }
 
       if (_params.repeat > 1 && !this._prevent_repeat) {
-        for (var k = 0; k < _params.repeat - 1; k++) {
+        var parse = function (element) {
+          return function() {
+            element.parse();
+          };
+        };
+
+        for (k = 0; k < _params.repeat - 1; k++) {
           var clone = this.element.cloneNode(true);
           clone.id = clone.id + '-repeat-' + (k + 1);
           this.element.parentNode.appendChild(clone);
@@ -241,9 +254,7 @@
           element._prevent_repeat = true;
           element.original_id = this.id;
 
-          setTimeout(function() {
-            element.parse();
-          }, 0);
+          setTimeout(parse(element), 0);
         }
       }
 
@@ -258,11 +269,9 @@
         _element_style += key + 'animation-play-state:' + (_params.play === 'false' ? 'paused' : 'running') + ';'; 
 
         for (var k in _animation_properties) {
-          if (!_hop.call(_animation_properties, k)) {
-            continue;
+          if (_hop.call(_animation_properties, k)) {
+            _element_style += key + 'animation-' + _animation_properties[k] + ':' + _params[k] + ';';
           }
-
-          _element_style += key + 'animation-' + _animation_properties[k] + ':' + _params[k] + ';';
         }
       });
 
@@ -281,7 +290,7 @@
           var ws = _waits[_this.element.id];
           for (var k = 0, l = ws.length; k < l; k++) {
             ws[k].start();
-          };
+          }
           delete _waits[_this.element.id];
         }
       };
@@ -316,7 +325,7 @@
       }
     };
 
-    Animate.Element.prototype.start = function(_bind) {
+    Animate.Element.prototype.start = function() {
       var _element_style = '',
           _this = this;
       _crossbrowser(function(key) {
@@ -324,11 +333,11 @@
       });
 
       _style.innerHTML += '#' + this.element.id + this._bind + '{' + _element_style + '}';
-    }
+    };
 
     Animate.Element.prototype.parse_value = function(value) {
       var match = value.trim().match(_functions_regex),
-          _arguments = match && match[2].split(',').filter(function (a) { return a.trim() }),
+          _arguments = match && match[2].split(',').filter(function (a) { return a.trim(); }),
           _fn_name = match && match[1].replace(/\s/g, '');
 
       if (_hop.call(w, _fn_name)) {
@@ -350,7 +359,7 @@
       styles = styles.split(';');
 
       for (var k = 0, l = styles.length, style, prop, value; k < l; k++) {
-        if ((style = styles[k].split(':')).length != 2) {
+        if ((style = styles[k].split(':')).length !== 2) {
           _output += this.parse_value(styles[k]);
         } else {
           prop = style[0].trim();
@@ -364,7 +373,7 @@
     };
 
     return Animate;
-  };
+  })();
 
     /*!
    * contentloaded.js
@@ -394,9 +403,15 @@
     pre = doc.addEventListener ? '' : 'on',
 
     init = function(e) {
-      if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
-      (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
-      if (!done && (done = true)) fn.call(win, e.type || e);
+      if (e.type === 'readystatechange' && doc.readyState !== 'complete') {
+        return;
+      }
+
+      (e.type === 'load' ? win : doc)[rem](pre + e.type, init, false);
+
+      if (!done && (done = true)) {
+        fn.call(win, e.type || e);
+      }
     },
 
     poll = function() {
@@ -404,11 +419,14 @@
       init('poll');
     };
 
-    if (doc.readyState == 'complete') fn.call(win, 'lazy');
-    else {
+    if (doc.readyState === 'complete') {
+      fn.call(win, 'lazy');
+    } else {
       if (doc.createEventObject && root.doScroll) {
         try { top = !win.frameElement; } catch(e) { }
-        if (top) poll();
+        if (top) {
+          poll();
+        }
       }
       doc[add](pre + 'DOMContentLoaded', init, false);
       doc[add](pre + 'readystatechange', init, false);
@@ -418,6 +436,6 @@
   }
 
   contentLoaded(w, function() {
-    Animate.init();
+    w.Animate.init();
   });
 })(window, document);
