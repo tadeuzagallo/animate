@@ -84,34 +84,34 @@
 
           return _a + Math.floor(Math.random() * (_b - _a)) + _unit(b);
         },
-        pa: (function() {
-          var PA = {};
+        ap: (function() {
+          var AP = {};
 
           return function(initial, ratio) {
             var id = this.original_id || this.id;
 
-            if (!PA[id]) {
-             PA[id] = initial;
+            if (!AP[id]) {
+             AP[id] = initial;
             } else {
-             PA[id] = parseInt(PA[id], 10) + ratio + _unit(PA[id]);
+             AP[id] = ParseInt(AP[id], 10) + ratio + _unit(AP[id]);
             }
 
-            return PA[id];
+            return AP[id];
           };
         })(),
-        pg: (function() {
-          var PG = {};
+        gp: (function() {
+          var GP = {};
 
           return function(initial, ratio) {
             var id = this.original_id || this.id;
 
-            if (!PG[id]) {
-             PG[id] = initial;
+            if (!GP[id]) {
+             GP[id] = initial;
             } else {
-             PG[id] = parseInt(PG[id], 10) * ratio + _unit(PG[id]);
+             GP[id] = parseInt(GP[id], 10) * ratio + _unit(GP[id]);
             }
 
-            return PG[id];
+            return GP[id];
           };
         })(),
         log: (function() {
