@@ -212,10 +212,11 @@
     })();
 
     Animate.Element.prototype.parse = function() {
-      var _prop = /^data-(\d+)$/,
+      var _prop = /^data-([0-9\-]+)$/,
           _param = /^data-(.*)$/,
           _params = _extend({}, _defaults),
-          _keyframes = '',
+          _keyframes = {},
+          _keyframes_str = '',
           _element_style = '',
           _this = this;
 
@@ -225,17 +226,32 @@
         v = attr.value || attr.nodeValue;
 
         if ((match = n.match(_prop))) {
-          _keyframes += match[1] + '% {' + this.parse_css(v) + '}\n';
-        } else if ((match = n.match(_param))) {
-          if (_valid_properties.indexOf(match[1]) === -1) {
-            continue;
+          var keys = match[1].trim().split('-');
+          console.log(keys);
+          for (var x = 0, y = keys.length, key; x < y; x++) {
+            key = keys[x];
+            console.log(key);
+            if (key) {
+              if (!_hop.call(_keyframes, key)) {
+                _keyframes[key] = '';
+              }
+              _keyframes[key] += this.parse_css(v);
+            }
           }
-
-          _params[match[1]] = this.parse_value(v);
+        } else if ((match = n.match(_param))) {
+          if (_valid_properties.indexOf(match[1]) !== -1) {
+            _params[match[1]] = this.parse_value(v);
+          }
         }
       }
 
-      if (!_keyframes.length) {
+      for (var key in _keyframes) {
+        if (_hop.call(_keyframes, key)) {
+          _keyframes_str += key + '%{' + _keyframes[key] + '}';
+        }
+      }
+
+      if (!_keyframes_str.length) {
         return;
       }
 
@@ -262,7 +278,7 @@
         _style.innerHTML += _keyframe_content
           .replace('%key%', key)
           .replace('%name%', _this._name)
-          .replace('%keyframes%', _keyframes);
+          .replace('%keyframes%', _keyframes_str);
       });
 
       _crossbrowser(function(key) {
