@@ -231,10 +231,8 @@
 
         if ((match = n.match(_prop))) {
           var keys = match[1].trim().split('-');
-          console.log(keys);
           for (var x = 0, y = keys.length, key; x < y; x++) {
             key = keys[x];
-            console.log(key);
             if (key) {
               if (!_hop.call(_keyframes, key)) {
                 _keyframes[key] = '';
@@ -246,6 +244,8 @@
           if (_valid_properties.indexOf(match[1]) !== -1) {
             _params[match[1]] = this.parse_value(v);
           }
+        } else if (n === 'style') {
+          this.element.setAttribute(n, this.parse_css(v));
         }
       }
 
