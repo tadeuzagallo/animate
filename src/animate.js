@@ -146,6 +146,10 @@
 
             return _output;
           }
+        },
+        transform: function() {
+          var value = [].join.call(arguments, ',');
+          return _crossbrowser('transform', value);
         }
       },
       _functions_regex = /^([a-z]+)\((.*)\)$/;
