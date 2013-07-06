@@ -23,13 +23,6 @@
   _hop = Object.prototype.hasOwnProperty,
   _on = d.addEventListener || d.attachEvent,
   _off = d.removeEventListener || d.detachEvent,
-  //_to_camel_case = function(underscored) {
-    //return underscored
-    //.replace(/^-/g, '')
-    //.replace(/-([a-z])/g, function(match, letter) {
-      //return letter.toUpperCase();
-    //});
-  //},
   _extend = function (target, source) {
     for (var k in source) {
       if (_hop.call(source, k)) {
@@ -180,6 +173,11 @@
       }
 
       _init[body.id] = true;
+
+      _crossbrowser(function(key) {
+        body.style[key+'backface-visibility'] = 'hidden';
+        body.style[key+'transform'] = 'translate3d(0,0,0)';
+      });
 
       var elements = _slice.call(_find_by_tag(body, '*'), 0);
 
