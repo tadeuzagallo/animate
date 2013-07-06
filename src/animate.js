@@ -143,9 +143,20 @@
         transform: function() {
           var value = [].join.call(arguments, ',');
           return _crossbrowser('transform', value);
+        },
+        'transform-origin': function() {
+          var ch = 120,
+              output = '';
+
+          for (var k = 0, l = arguments.length, value; k < l; k++) {
+            value = arguments[k];
+            output += _crossbrowser('transform-origin-' + String.fromCharCode(ch + k), value);
+          }
+
+          return output;
         }
       },
-      _functions_regex = /^([a-z]+)\((.*)\)$/;
+      _functions_regex = /^([a-z\-]+)\((.*)\)$/;
 
   d.head.appendChild(_style);
 
