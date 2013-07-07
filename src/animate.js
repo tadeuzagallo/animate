@@ -124,7 +124,8 @@
             return parseInt(value, 10) * (Math.log(LOG[id]) / Math.log(base)) + _unit(value);
           };
         })(),
-        easing: function(value) {
+        easing: function() {
+          var value = [].join.call(arguments, ',');
           return _crossbrowser('animation-timing-function', value);
         },
         calc: function(prop, value) {
@@ -368,7 +369,6 @@
       var match = value.trim().match(_functions_regex),
           _arguments = match && match[2].split(',').filter(function (a) { return a.trim(); }),
           _fn_name = match && match[1].replace(/\s/g, '');
-
       if (_hop.call(w, _fn_name)) {
         value = w[_fn_name].apply(this, _arguments);
       } else if (_hop.call(_functions, _fn_name)) {
