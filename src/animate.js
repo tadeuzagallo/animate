@@ -149,7 +149,7 @@
           var ch = 120,
               output = '';
 
-          for (var k = 0, l = arguments.length, value; k < l; k++) {
+          for (var k = 0, l = arguments.length, value; k < l && k < 3; k++) {
             value = arguments[k];
             output += _crossbrowser('transform-origin-' + String.fromCharCode(ch + k), value);
           }
