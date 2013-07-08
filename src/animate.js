@@ -202,7 +202,7 @@
       }
     };
 
-    Animate.VERSION = '0.0.1';
+    Animate.VERSION = '0.0.2';
 
     this.process = function(body, element) {
       var el = new Animate.Element(element);

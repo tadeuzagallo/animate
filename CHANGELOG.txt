@@ -1,3 +1,10 @@
+0.0.2
+
+changed pa and pg methods to ap and ag
+added parse to style attribute
+added crossbroser transform and transform-origin function
+added style to animation-body to prevent flick
+
 0.0.1
 
 changed data-state to data-play, defaults to true
@@ -5,5 +12,6 @@ added data-bind
 implemented data-callback
 implemented data-bind
 implemented data-waits
+droped data-name
 
 - Initial Version  -

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8" />
+      <title>Animate.js Example</title>
+      <style>
+
+        #animation-body {
+          position: relative;
+          width: 900px;
+          height: 230px;
+          padding-left: 60px;
+          margin: 0 auto;
+          padding-top: 100px;
+
+          font-family: Helvetica neue;
+          font-size: 180px;
+          font-weight: bold;
+
+          text-shadow: #555 0px 2px 5px;
+
+          overflow: hidden;
+        }
+
+        #animation-body div {
+          float: left;
+        }
+
+        #a {
+          display: block;
+          width: 62px;
+          font-size: 0px;
+          margin-top: 123px;
+          margin-left: 62px;
+        }
+
+        #n {
+          position: relative;
+          top: -420px;
+        }
+
+        #i {
+          width: 24px;
+          height: 100%;
+        }
+
+        #i-body, #i-dot {
+          position: relative;
+          display: block;
+          background: black;
+          box-shadow: 0px 2px 5px #555;
+        }
+
+        #i-body {
+          right: -800px;
+          top: 63px;
+          width: 24px;
+          height: 94px;
+        }
+
+        #i-dot {
+          top: -128px;
+          width: 24px;
+          height: 21px;
+        }
+
+        #m {
+          position: relative;
+          top: -400px;
+        }
+
+        #a2 {
+          position: relative;
+          width: 52px;
+          margin-left: 52px;
+          margin-top: 120px;
+          font-size: 1px;
+        }
+
+        #t {
+          visibility: hidden;
+        }
+
+        #e {
+          visibility: hidden;
+        }
+
+        #js {
+          position: relative;
+          left: -960px;
+        }
+
+        #point {
+          position: relative;
+          display: block;
+          width: 20px;
+          height: 100%;
+          padding-left: 5px;
+          padding-top: 100px;
+        }
+
+        #bouncing-ball {
+          position: absolute;
+          top: 80px;
+          width: 24px;
+          height: 24px;
+          background: red;
+          border-radius: 50px /50px;
+          box-shadow: inset 0px -6px 1px rgba(0,0,0,.3);
+        }
+
+        #shadow {
+          position: absolute;
+          top: 130px;
+          width: 18px;
+          margin-left: 6px;
+          height: 10px;
+          border-radius: 50px / 15px;
+          z-index: -1;
+          box-shadow: 0 40px 5px #555;
+          background: transparent;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="animation-body">
+        <div
+          id="a"
+          data-100="font-size: 180px; margin-top: 0; margin-left: 0; width: 124px;"
+          data-duration="400ms"
+          data-easing="ease-in"
+          data-waits="js">
+          A
+        </div>
+
+        <div
+          id="n"
+          data-waits="a"
+          data-100="top: 0;"
+          data-easing="ease-in"
+          data-duration="200ms">
+          n
+        </div>
+
+        <div id="i">
+          <div
+            id="i-dot"
+            data-100="top: 54px; transform(rotate(360deg));"
+            data-duration="450ms"
+            data-easing="ease-out"
+            data-waits="n"></div>
+          <div
+            id="i-body"
+            data-100="right: 0px; transform(rotate(-360deg));"
+            data-duration="400ms"
+            data-easing="ease-out"
+            data-waits="n"></div>
+        </div>
+
+        <div
+          id="m"
+          data-100="top: 0; transform(rotateX(-360deg));"
+          data-waits="i-dot"
+          data-duration="300ms"
+          data-easing="ease-out">
+          m
+        </div>
+
+        <div
+          id="a2"
+          data-100="font-size: 180px; margin-left: 0; width: 104px; transform(rotateY(-1080deg)); margin-top:0;"
+          data-duration="300ms"
+          data-easing="ease-out"
+          data-waits="m">
+          a
+        </div>
+
+        <div
+          id="t"
+          style="transform(rotateX(-90deg));"
+          data-0-100="visibility: visible"
+          data-100="transform(rotateX(0deg));"
+          data-duration="300ms"
+          data-easing="ease-out"
+          data-waits="a2">
+          t
+        </div>
+
+        <div
+          id="e"
+          style="transform(rotateY(-90deg));"
+          data-0-100="visibility: visible"
+          data-100="transform(rotateY(0deg));"
+          data-duration="300ms"
+          data-easing="ease-out"
+          data-waits="t">
+          e
+        </div>
+
+            <!--data-14-18-22-42-46-50-66-70-74-84-88-92="height: 24px; width: 24px; border-radius: 50px / 50px;"-->
+            <!--data-14-18-42-46-66-70-84-88="top: 150px;  background-color: red;"-->
+            <!--data-16-44-68-86="top: 162px; background-color: rgb(200, 0, 0); border-radius: 50px / 23px; height: 12px; easing(ease-in-out);"-->
+            <!--data-18-46-70-88="easing(ease-out)"-->
+            <!--data-20-48-72-90="height: 26px; width: 22px; margin-left: 1px; easing(ease-in-out);"-->
+        <div id="point">
+          <div
+            id="bouncing-ball"
+            data-32="top: 120px;"
+            data-58="top: 135px"
+            data-80="top: 142px"
+            data-93="top: 146px;"
+            data-96="top: 149px"
+            data-99="top: 151px"
+            data-22-50-72-90-95-100="top: 152px; easing(ease-out);"
+            data-duration="2s"
+            data-easing="ease-in"
+          ></div>
+
+          <div
+            id="shadow"
+            data-32="width: 14px; margin-left: 4px;"
+            data-58="width: 18px; margin-left: 3px;"
+            data-80="width: 19px; margin-left: 2px;"
+            data-93="width: 20px;margin-left: 1px;"
+            data-96="width: 21px;margin-left: 0;"
+            data-99="width: 22px;margin-left: 0;"
+            data-22-50-72-90-95-100="width: 22px; easing(ease-out);margin-left: 0;"
+            data-duration="4s"
+            data-easing="ease-in"
+          ></div>
+        </div>
+
+        <!--<div-->
+          <!--id="js"-->
+          <!--style="transform(rotate3d(1,1,0,180deg));"-->
+          <!--data-90="transform(rotate3d(1,1,0,180deg));"-->
+          <!--data-100="left: 0;transform(rotate3d(1,1,0,0deg));"-->
+          <!--data-duration="500ms"-->
+          <!--data-waits="bouncing-ball"-->
+          <!--data-easing="ease-in-out">-->
+        <div
+          id="js"
+          style="transform-origin(24px, 60px); transform(rotate(-180deg));"
+          data-50-100="left: 0;"
+          data-50="easing(linear)"
+          data-45="transform(rotate(-180deg));"
+          data-65="transform(rotate(35deg)); easing(ease-out);"
+          data-75="transform(rotate(-10deg));"
+          data-84="transform(rotate(7deg));"
+          data-92="transform(rotate(-2deg));"
+          data-96="transform(rotate(1deg));"
+          data-100="transform(rotate(0deg));"
+          data-easing="ease-in-out"
+          data-duration="2.5s"
+          data-waits="bouncing-ball">
+          js
+        </div>
+      </div>
+      <script type="text/javascript" src="../src/animate.js"></script>
+    </body>
+</html>
